@@ -61,8 +61,8 @@ class SideBar extends EventEmitter {
 		this.node.classList.toggle('sidebar--hidden', !visible);
 
 		const style = styles[active] || {};
-		this.node.style.background = style.background || '';
-		this.node.style.color = style.color || '';
+		this.node.style.setProperty('--background', style.background || '');
+		this.node.style.setProperty('--color', style.color || '');
 
 		const orderedHosts = Object.values(hosts)
 			.sort(({ url: a }, { url: b }) => sorting.indexOf(a) - sorting.indexOf(b));
@@ -80,7 +80,7 @@ class SideBar extends EventEmitter {
 			mentionCount: (badges[host.url] || badges[host.url] === 0) ? parseInt(badges[host.url], 10) : null,
 		}));
 
-		this.node.querySelector('.add-server .tooltip').innerText = i18n.__('sidebar.addNewServer');
+		this.node.querySelector('.add-server').dataset.tooltip = i18n.__('sidebar.addNewServer');
 	}
 
 	renderHost({ url, title, order, active, hasUnreadMessages, mentionCount }) {
@@ -93,7 +93,6 @@ class SideBar extends EventEmitter {
 		const node = this.node.querySelector(`.server[data-url="${ url }"]`);
 		const serverElement = node ? node : document.createElement('li');
 		const initialsElement = node ? node.querySelector('.initials') : document.createElement('span');
-		const tooltipElement = node ? node.querySelector('.tooltip') : document.createElement('div');
 		const badgeElement = node ? node.querySelector('.badge') : document.createElement('div');
 		const faviconElement = node ? node.querySelector('img') : document.createElement('img');
 		const shortcutElement = node ? node.querySelector('.name') : document.createElement('div');
@@ -101,8 +100,10 @@ class SideBar extends EventEmitter {
 		serverElement.setAttribute('draggable', 'true');
 		serverElement.setAttribute('server', url);
 		serverElement.dataset.url = url;
+		serverElement.dataset.tooltip = title;
 		serverElement.dataset.host = url;
 		serverElement.dataset.sortOrder = order + 1;
+		serverElement.classList.add('sidebar__list-item');
 		serverElement.classList.add('server');
 		serverElement.classList.add('instance');
 		serverElement.classList.toggle('active', active);
@@ -118,9 +119,6 @@ class SideBar extends EventEmitter {
 		initialsElement.classList.add('initials');
 		initialsElement.innerText = name;
 
-		tooltipElement.classList.add('tooltip');
-		tooltipElement.innerText = title;
-
 		badgeElement.classList.add('badge');
 		badgeElement.innerText = Number.isInteger(mentionCount) ? String(mentionCount) : '',
 
@@ -135,7 +133,6 @@ class SideBar extends EventEmitter {
 
 		if (!node) {
 			serverElement.appendChild(initialsElement);
-			serverElement.appendChild(tooltipElement);
 			serverElement.appendChild(badgeElement);
 			serverElement.appendChild(faviconElement);
 			serverElement.appendChild(shortcutElement);
@@ -227,10 +224,10 @@ class SideBar extends EventEmitter {
 		const serverElement = event.currentTarget;
 
 		const newSorting = Array.from(this.serverListElement.querySelectorAll('.server'))
-			.reduce((sorting, serverElement) => [...sorting, serverElement.dataset.url], []);
+			.map((serverElement) => serverElement.dataset.url);
 
 		this.emit('servers-sorted', newSorting);
-		this.emit('select-server', serverElement.dataset.host);
+		this.emit('select-server', serverElement.dataset.url);
 	}
 
 	handleAddServerClick() {

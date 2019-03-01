@@ -1,4 +1,7 @@
 .sidebar {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
 	position: fixed;
 	z-index: 100000;
 	top: 0;
@@ -6,35 +9,13 @@
 
 	width: 68px;
 	height: 100%;
-	padding-top: 27px;
 
-	color: #ffffff;
-	background-color: @primary-background-color;
+	color: var(--color, #ffffff);
+	background: var(--background, @primary-background-color);
 	-webkit-app-region: drag;
+	user-select: none;
 
-	&::after {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		content: "";
-
-		background-color: rgba(0, 0, 0, 0.1);
-	}
-
-
-	.sidebar__list {
-		position: relative;
-		z-index: 2;
-
-		margin: 0;
-		padding: 0;
-		-webkit-app-region: no-drag;
-	}
-
-	&.sidebar--shortcuts li .name {
+	&.sidebar--shortcuts .sidebar__list-item .name {
 		display: initial;
 	}
 
@@ -46,53 +27,140 @@
 			left: 0;
 		}
 	}
+
+	.sidebar__inner {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		flex: 1 1 0;
+		padding-top: 27px;
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	.sidebar__list {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+
+		margin: 0;
+		padding: 0;
+		-webkit-app-region: no-drag;
+	}
+
+	.sidebar__list-item {
+		&[data-tooltip]::after {
+
+			position: absolute;
+			top: 50%;
+			left: 100%;
+
+			display: block;
+			visibility: hidden;
+
+			padding: 0.5rem 1rem;
+
+			content: attr(data-tooltip);
+
+			transition: all 0.18s ease-out 0.18s;
+			transform: translate(10px, -50%);
+
+			white-space: nowrap;
+			pointer-events: none;
+
+			opacity: 0;
+
+			color: #ffffff;
+			border-radius: 2px;
+			background-color: #1f2329;
+
+			font-size: 0.875rem;
+			line-height: normal;
+		}
+
+		&[data-tooltip]:hover::after {
+			visibility: visible;
+
+			transform: translate(0, -50%);
+
+			opacity: 1;
+		}
+	}
+
+	.add-server {
+		position: relative;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		margin-bottom: 16px;
+
+		cursor: pointer;
+
+		font-size: 24px;
+		align-items: center;
+		justify-content: flex-start;
+
+		span {
+			color: inherit;
+			font-size: 40px;
+
+			position: static;
+
+			transition: opacity 400ms;
+			text-align: initial;
+			width: auto;
+
+			opacity: 0.6;
+
+			line-height: 1;
+		}
+	}
 }
 
-.sidebar li {
+.server-list {
+	.server {
+		position: relative;
 
-	position: relative;
+		display: flex;
 
-	display: flex;
+		height: 58px;
+		margin-bottom: 16px;
 
-	height: 55px;
-	margin-bottom: 17px;
+		cursor: pointer;
 
-	cursor: pointer;
-	-webkit-user-select: none;
-	user-select: none;
+		color: inherit;
 
-	color: inherit;
-
-	font-size: 17pt;
-	align-items: center;
-	-webkit-app-region: no-drag;
-	filter: brightness(110%);
-	justify-content: flex-start;
+		font-size: 24px;
+		align-items: center;
+		filter: brightness(110%);
+		justify-content: flex-start;
+	}
 }
 
-.sidebar li.active img {
+.server.active img {
 	opacity: 1;
 }
 
-.sidebar li.active span {
+.server.active span {
 	opacity: 1;
 }
 
-.sidebar li.unread::before {
+.server.unread::before {
 	width: 5px;
 	height: 6px;
 
 	opacity: 0.6;
 }
 
-.sidebar li.active::before {
+.server.active::before {
 	width: 5px;
 	height: 30px;
 
 	opacity: 1;
 }
 
-.sidebar li::before {
+.server::before {
 	width: 0;
 	height: 0;
 
@@ -131,26 +199,7 @@
 	line-height: 60px;
 }
 
-.sidebar li .tooltip {
-	position: absolute;
-	top: 15px;
-	left: 70px;
-
-	display: none;
-
-	padding: 0 15px;
-
-	white-space: nowrap;
-
-	color: #ffffff;
-	border-radius: 6px;
-	background-color: #000000;
-
-	font-size: 14px;
-	line-height: 30px;
-}
-
-.sidebar li .badge {
+.server .badge {
 	position: absolute;
 	z-index: 1;
 	top: 2px;
@@ -171,7 +220,7 @@
 	line-height: 15px;
 }
 
-.sidebar li .name {
+.server .name {
 	position: absolute;
 	bottom: -12px;
 
@@ -188,22 +237,14 @@
 	line-height: 11px;
 }
 
-.sidebar li:hover span {
+.sidebar .sidebar__list-item:hover span {
 	opacity: 0.8;
 }
 
-.sidebar li:hover img {
+.sidebar .sidebar__list-item:hover img {
 	opacity: 0.8;
 }
 
-.sidebar li:hover .tooltip {
+.sidebar .sidebar__list-item:hover .tooltip {
 	display: block;
-}
-
-.sidebar li.add-server {
-	height: 30px;
-}
-
-.sidebar li.add-server span {
-	font-size: 40px;
 }
